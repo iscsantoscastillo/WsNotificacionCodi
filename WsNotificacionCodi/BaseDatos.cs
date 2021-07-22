@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web;
+
 
 namespace WsNotificacionCodi
 {
     public static class BaseDatos
     {
+        public static string RutaLog = null;
         const string SERVIDOR = "192.168.123.44";
         const string USUARIO = "test";
         const string CONTRASENIA = "GrupoMacro2017";
         const string NOMBRE_BASE = "SOFTCREDITO";
-
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         static string cadenaConexion = "Data Source=" + SERVIDOR + ";Initial Catalog=" + NOMBRE_BASE + ";User id=" + USUARIO + ";Password=" + CONTRASENIA;
 
         /*
@@ -31,6 +30,10 @@ namespace WsNotificacionCodi
             Folio
             Sucursal
         */
+
+        private static void init() {
+            log4net.Config.XmlConfigurator.Configure(new FileInfo(RutaLog));
+        }
         private static string getSHA1(string texto)
         {
             SHA1 sha1 = SHA1Managed.Create();
@@ -44,6 +47,8 @@ namespace WsNotificacionCodi
 
         public static bool Antenticar(string usuario,string contrasenia)
         {
+            init();
+            log.Info("Método -Antenticar-");
             bool valido = false;
             string contraseniaSha1 = getSHA1(contrasenia);
 
@@ -74,6 +79,7 @@ namespace WsNotificacionCodi
             }
             catch (Exception ex)
             {
+                log.Error("Ocurrió un error -Antenticar-: " + ex.Message);
                 valido = false;
                 return valido;
             }
@@ -88,6 +94,8 @@ namespace WsNotificacionCodi
         }
         public static string RegistrarPago(ObjPeticion peticion)
         {
+            init();
+            log.Info("Método -RegistrarPago-");
             SqlConnection conexion = new SqlConnection();
             string idRegistrado = "";
 
@@ -142,6 +150,7 @@ namespace WsNotificacionCodi
             }
             catch (Exception ex)
             {
+                log.Error("Ocurrió un error -RegistrarPago- : " + ex.Message);
                 return idRegistrado;
             }
             finally

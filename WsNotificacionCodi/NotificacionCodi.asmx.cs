@@ -25,12 +25,13 @@ namespace WsNotificacionCodi
         public ObjRespuesta Notify(ObjPeticion objPeticion)
         {
             //Referencia //campo "des" de peticion de QR? o campo "ref" de 7 caracteres
-
+            BaseDatos.RutaLog = Server.MapPath("~/log4net.config");
+            
             try
             {
                 string[] arregloUsuario = new string[3];
                 arregloUsuario = objPeticion.Usuario.Split(LETRA_DIVISORA);//prefijo
-
+                
                 if (arregloUsuario[0] == PREFIJO_USUARIO_WS)
                 {
                     if (arregloUsuario.Count() >= 2)
