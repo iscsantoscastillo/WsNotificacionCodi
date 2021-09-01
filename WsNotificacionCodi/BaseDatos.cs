@@ -4,16 +4,18 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
-
+using System.Web.Script.Serialization;
+//using System.Runtime.Serialization.
 
 namespace WsNotificacionCodi
 {
     public static class BaseDatos
     {
         public static string RutaLog = null;
-        const string SERVIDOR = "192.168.123.44";
-        const string USUARIO = "test";
-        const string CONTRASENIA = "GrupoMacro2017";
+        //const string SERVIDOR = "192.168.123.44";
+        const string SERVIDOR = "192.168.162.3";
+        const string USUARIO = "apiCodi";
+        const string CONTRASENIA = "YaRmENriAL";
         const string NOMBRE_BASE = "SOFTCREDITO";
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         static string cadenaConexion = "Data Source=" + SERVIDOR + ";Initial Catalog=" + NOMBRE_BASE + ";User id=" + USUARIO + ";Password=" + CONTRASENIA;
@@ -96,6 +98,11 @@ namespace WsNotificacionCodi
         {
             init();
             log.Info("Método -RegistrarPago-");
+            //Serializando...
+            var serializer = new JavaScriptSerializer();
+            var serializedResult = serializer.Serialize(peticion);           
+            log.Info("objPeticion: " + serializedResult);
+
             SqlConnection conexion = new SqlConnection();
             string idRegistrado = "";
 
@@ -152,6 +159,60 @@ namespace WsNotificacionCodi
             {
                 log.Error("Ocurrió un error -RegistrarPago- : " + ex.Message);
                 return idRegistrado;
+            }
+            finally
+            {
+                if (conexion.State == System.Data.ConnectionState.Open)
+                {
+                    conexion.Close();
+                    conexion.Dispose();
+                }
+            }
+
+        }
+
+        public static bool GenerarAbono(ObjPeticion peticion, string folio)
+        {
+            init();
+            log.Info("Método -GenerarAbono-");
+            SqlConnection conexion = new SqlConnection();
+            
+
+            try
+            {
+                conexion.ConnectionString = cadenaConexion;
+                conexion.Open();
+
+                string consultaSql = "sp_sfc_generar_abono"; 
+                SqlCommand comando = new SqlCommand();
+                comando.Connection = conexion;
+                comando.CommandText = consultaSql;
+                comando.CommandType = System.Data.CommandType.StoredProcedure;
+                
+                SqlParameter claveSolicitud =   new SqlParameter("@clave_solicitud", peticion.Referencia);
+                SqlParameter cveSucursal =      new SqlParameter("@cve_sucursal", "CODI");
+                SqlParameter cveVendedor =      new SqlParameter("@cve_vendedor", folio);                 
+                SqlParameter caja =             new SqlParameter("@caja", "000005");
+                SqlParameter totalPagado =      new SqlParameter("@total_pagado", peticion.Monto);                
+                SqlParameter cveFormaPago =     new SqlParameter("@cve_forma_pago", "0001");
+                                
+                comando.Parameters.Add(claveSolicitud);
+                comando.Parameters.Add(cveSucursal);
+                comando.Parameters.Add(cveVendedor);
+                comando.Parameters.Add(caja);
+                comando.Parameters.Add(totalPagado);
+                comando.Parameters.Add(cveFormaPago);
+                
+                comando.ExecuteNonQuery();
+                comando.Dispose();
+                conexion.Close();
+               
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Ocurrió un error -GenerarAbono- : " + ex.Message);
+                return false;
             }
             finally
             {

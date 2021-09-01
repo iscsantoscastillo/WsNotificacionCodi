@@ -40,9 +40,12 @@ namespace WsNotificacionCodi
                         {
                             string folioRegistro = "";
                             folioRegistro = BaseDatos.RegistrarPago(objPeticion);
+                            
 
                             if (folioRegistro != "")
                             {
+                                BaseDatos.GenerarAbono(objPeticion, folioRegistro);
+                                
                                 ObjRespuesta objRespuesta = new ObjRespuesta();
                                 objRespuesta.Error = "0";
                                 objRespuesta.Folio = folioRegistro;
@@ -86,7 +89,7 @@ namespace WsNotificacionCodi
                 }
             }
             catch (Exception ex)
-            {
+            {                
                 ObjRespuesta objRespuesta = new ObjRespuesta();
                 objRespuesta.Error = "1";
                 objRespuesta.Folio = "0";
