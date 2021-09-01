@@ -12,11 +12,19 @@ namespace WsNotificacionCodi
     public static class BaseDatos
     {
         public static string RutaLog = null;
+        
+        //Datos de Desarrollo
         //const string SERVIDOR = "192.168.123.44";
+        //const string USUARIO = "test";
+        //const string CONTRASENIA = "GrupoMacro2017";
+
+        //Datos de PRODUCTIVO
         const string SERVIDOR = "192.168.162.3";
         const string USUARIO = "apiCodi";
         const string CONTRASENIA = "YaRmENriAL";
+        
         const string NOMBRE_BASE = "SOFTCREDITO";
+
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         static string cadenaConexion = "Data Source=" + SERVIDOR + ";Initial Catalog=" + NOMBRE_BASE + ";User id=" + USUARIO + ";Password=" + CONTRASENIA;
 
