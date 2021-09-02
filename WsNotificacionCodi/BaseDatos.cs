@@ -202,7 +202,7 @@ namespace WsNotificacionCodi
                 SqlParameter cveVendedor =      new SqlParameter("@cve_vendedor", folio);                 
                 SqlParameter caja =             new SqlParameter("@caja", "000005");
                 SqlParameter totalPagado =      new SqlParameter("@total_pagado", peticion.Monto);                
-                SqlParameter cveFormaPago =     new SqlParameter("@cve_forma_pago", "0001");
+                SqlParameter cveFormaPago =     new SqlParameter("@cve_forma_pago", "");
                                 
                 comando.Parameters.Add(claveSolicitud);
                 comando.Parameters.Add(cveSucursal);
